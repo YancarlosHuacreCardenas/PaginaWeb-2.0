@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Carrito - bycint Cosméticos{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Carrito principal -->
+        <div class="flex-1 bg-white rounded-xl shadow p-8 overflow-x-auto">
+            <h1 class="text-3xl font-bold mb-6">Carrito</h1>
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[600px] text-left mb-6">
+                <thead>
+                    <tr class="border-b">
+                        <th class="py-2 font-semibold">Producto</th>
+                        <th class="py-2 font-semibold">Precio</th>
+                        <th class="py-2 font-semibold">Cantidad</th>
+                        <th class="py-2 font-semibold">Total</th>
+                        <th class="py-2 font-semibold"></th>
+                    </tr>
+                </thead>
+                <tbody id="carrito-table-body">
+                    {% for prod in productos %}
+                    <tr>
+                        <td class="py-2 flex items-center gap-3">
+                            <img src="{{ url_for('static', filename='img/' ~ prod.imagen) }}" alt="{{ prod.nombre }}" class="w-12 h-12 object-contain rounded shadow">
+                            <span class="font-semibold">{{ prod.nombre }}</span>
+                        </td>
+                        <td class="py-2">S/ {{ '%.2f' % prod.precio }}</td>
+                        <td class="py-2">
+                            <div class="flex items-center gap-2">
+                                <button class="btn-menos-cantidad px-2 py-1 rounded bg-gray-200 text-lg font-bold" data-id="{{ prod.id }}">-</button>
+                                <input type="number" class="input-cantidad-carrito w-12 text-center border rounded" value="{{ prod.cantidad }}" min="1" data-id="{{ prod.id }}">
+                                <button class="btn-mas-cantidad px-2 py-1 rounded bg-gray-200 text-lg font-bold" data-id="{{ prod.id }}">+</button>
+                            </div>
+                        </td>
+                        <td class="py-2 font-bold">S/ {{ '%.2f' % (prod.precio * prod.cantidad) }}</td>
+                        <td class="py-2 text-center">
+                            <button class="btn-remove-cart text-red-600 hover:text-red-800" data-id="{{ prod.id }}">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-gray-500">Tu carrito está vacío</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            
+            <!-- Sistema de Envíos -->
+            <div class="my-6 border-t pt-6">
+                <h2 class="font-bold text-lg mb-4">Opciones de Envío</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Departamento</label>
+                        <select id="departamento-envio" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="">Selecciona un departamento</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Provincia</label>
+                        <select id="provincia-envio" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="">Selecciona una provincia</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Distrito</label>
+                        <select id="distrito-envio" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="">Selecciona un distrito</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Código Postal</label>
+                        <input type="text" id="codigo-postal-envio" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Código postal">
+                    </div>
+                </div>
+                <button id="btn-calcular-envio" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    Calcular Envío
+                </button>
+                
+                <!-- Opciones de envío -->
+                <div id="opciones-envio" class="mt-4"></div>
+            </div>
+            
+            <div class="my-6">
+                <div class="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-center py-5 font-bold text-lg shadow">
+                    ENVÍO GRATIS EN TODAS TUS COMPRAS
+                    <div class="text-xs font-normal mt-1">Por compras de S/ 100 a más</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumen -->
+        <div class="w-full lg:w-96 bg-white rounded-xl shadow p-6 h-fit">
+            <div class="bg-cyan-400 text-white text-center rounded-lg py-4 font-semibold mb-4">
+                ¡APROVECHA LAS MEJORES OFERTAS!<br>
+                <span class="text-xs font-normal">70% de descuento en sets seleccionados<br>¡Solo por tiempo limitado!</span>
+            </div>
+            <div class="text-sm text-gray-600 text-center mb-4">Solo S/ 100.00 más para envío gratis</div>
+            <hr class="mb-4">
+            <div class="mb-4">
+                <label class="flex items-center gap-2 font-semibold text-sm mb-2">
+                    <i class="fa-solid fa-percent text-blue-600"></i>
+                    Añade tu cupón de descuento
+                </label>
+                <div class="flex gap-2">
+                    <input id="input-cupon" type="text" class="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-200" placeholder="Código de cupón">
+                    <button id="btn-aplicar-cupon" class="bg-black text-white px-5 py-2 rounded hover:bg-gray-800 transition">Aplicar</button>
+                </div>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+                <span>Subtotal</span>
+                <span id="carrito-subtotal">S/ 0.00</span>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+                <span>Descuento</span>
+                <span id="carrito-descuento">-S/ 0.00</span>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+                <span>Envío</span>
+                <span id="carrito-envio">S/ 0.00</span>
+            </div>
+            <div class="flex justify-between items-center text-lg font-bold mb-4">
+                <span>Total</span>
+                <span id="carrito-total">S/ 0.00</span>
+            </div>
+            <button id="open-payment-modal" class="w-full bg-black text-white py-3 rounded-lg font-bold text-lg mb-3 hover:bg-gray-800 transition">Ir a pagar</button>
+            <a href="/tienda" class="w-full block border-2 border-black text-black py-3 rounded-lg font-bold text-lg hover:bg-gray-100 transition text-center">Seguir comprando</a>
+        </div>
+    </div>
+</div>
+
+<div class="mt-8 flex flex-col gap-4">
+  <label class="flex items-center gap-3">
+    <input type="radio" name="metodo_pago" value="yape" id="radio-yape">
+    <img src="{{ url_for('static', filename='img/QR_yape.png') }}" alt="Yape" class="w-10 h-10 object-contain rounded border">
+    Yape
+  </label>
+  <label class="flex items-center gap-3">
+    <input type="radio" name="metodo_pago" value="bcp" id="radio-bcp">
+    <img src="{{ url_for('static', filename='img/bcp.png') }}" alt="BCP" class="w-10 h-10 object-contain rounded border">
+    BCP
+  </label>
+  <label class="flex items-center gap-3">
+    <input type="radio" name="metodo_pago" value="visa" id="radio-visa">
+    <img src="{{ url_for('static', filename='img/visa.png') }}" alt="Visa" class="w-10 h-10 object-contain rounded border">
+    Visa
+  </label>
+</div>
+
+<div id="yape-qr-section" class="hidden mt-6">
+  <h3 class="text-lg font-bold mb-2">Paga con Yape</h3>
+  <img src="{{ url_for('static', filename='img/QR_yape.png') }}" alt="QR Yape" class="mx-auto w-48 h-48 object-contain rounded shadow-lg border">
+  <p class="mt-2 text-lg font-bold text-green-700">Monto a pagar: S/ {{ '%.2f' % total }}</p>
+  <p class="text-gray-600">Escanea este código QR con tu app Yape, ingresa el monto exacto y envía el comprobante.</p>
+  <a href="{{ url_for('static', filename='img/QR_yape.png') }}" download class="mt-2 inline-block text-blue-600 hover:underline">Descargar QR</a>
+</div>
+<div id="bcp-section" class="hidden mt-6">
+  <h3 class="text-lg font-bold mb-2">Paga con BCP</h3>
+  <p class="text-gray-600">Realiza una transferencia a nuestra cuenta BCP: <b>123-4567890-0-12</b> y envía el comprobante.</p>
+</div>
+<div id="visa-section" class="hidden mt-6">
+  <h3 class="text-lg font-bold mb-2">Paga con Visa</h3>
+  <form class="max-w-sm mx-auto bg-white p-4 rounded shadow" id="visa-form">
+    <div class="mb-3">
+      <label for="visa-numero" class="block text-sm font-medium mb-1">Número de tarjeta Visa</label>
+      <input type="text" id="visa-numero" name="visa-numero" maxlength="19" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="0000 0000 0000 0000" required>
+    </div>
+    <div class="mb-3 flex gap-2">
+      <div class="flex-1">
+        <label for="visa-vencimiento" class="block text-sm font-medium mb-1">Vencimiento</label>
+        <input type="text" id="visa-vencimiento" name="visa-vencimiento" maxlength="5" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="MM/AA" required>
+      </div>
+      <div class="flex-1">
+        <label for="visa-cvv" class="block text-sm font-medium mb-1">CVV</label>
+        <input type="text" id="visa-cvv" name="visa-cvv" maxlength="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="123" required>
+      </div>
+    </div>
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700 transition">Pagar con Visa</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/catalogo_categoria.js') }}"></script>
+<script src="{{ url_for('static', filename='js/envios.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pago.js') }}"></script>
+
+<!-- Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    // Inicializar Stripe
+    const stripe = Stripe('{{ config.STRIPE_PUBLISHABLE_KEY or "pk_test_placeholder" }}');
+    
+    // Hacer stripe disponible globalmente
+    window.stripe = stripe;
+</script>
+
+<!-- PayPal SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id={{ config.PAYPAL_CLIENT_ID or "placeholder" }}&currency=PEN"></script>
+{% endblock %} 

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Comunidad - bycint Cosméticos{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/comunidad.css') }}">
+  <!-- SwiperJS CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 lg:px-0 py-6">
+    <h1 class="text-4xl font-extrabold text-green-500 mb-4 text-center uppercase tracking-wide">Comunidad & Blog</h1>
+    <div class="w-full mx-auto text-center mb-6">
+        <p class="text-lg text-gray-700">Bienvenida a la comunidad exclusiva de bycint. Aquí encontrarás blogs, noticias, tips y novedades del mundo de la belleza. ¡Comenta, puntúa y sé parte activa!</p>
+    </div>
+</div>
+<!-- Carrusel Swiper fuera del container para ancho completo -->
+<div class="w-full px-0 overflow-x-hidden bg-gradient-to-tr from-green-50 via-white to-green-100 py-6">
+  <div class="w-full max-w-7xl mx-auto px-2 md:px-6">
+    <div class="relative">
+      <div class="swiper blogSwiper">
+        <div class="swiper-wrapper">
+          {% for blog in blogs %}
+          <div class="swiper-slide flex justify-center">
+            <div class="blog-card bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-full max-w-[320px] min-h-[500px] h-full hover:shadow-green-200 hover:shadow-2xl hover:-translate-y-2 transition-all border border-green-100 relative group animate-fadein">
+              <div class="w-full flex flex-col items-center mb-4 relative">
+                <div class="w-36 h-36 flex items-center justify-center relative mb-2">
+                  <img src="{{ url_for('static', filename='img/' ~ (blog.imagen or 'placeholder.png')) }}" alt="{{ blog.titulo }}" class="blog-img w-36 h-36 object-cover rounded-xl shadow border-4 border-green-100 group-hover:border-green-400 transition bg-white">
+                  <span class="absolute top-2 left-2 px-3 py-1 rounded-full shadow text-xs font-bold z-10 border border-white"
+                    style="background-color: {% if blog.categoria == 'Maquillaje' %}#f472b6{% elif blog.categoria == 'Cuidado de la piel' %}#facc15{% elif blog.categoria == 'Cosmética natural' %}#34d399{% elif blog.categoria == 'Perfumería' or blog.categoria == 'Perfumes' %}#818cf8{% elif blog.categoria == 'Joyería' %}#fbbf24{% elif blog.categoria == 'Accesorios' %}#38bdf8{% else %}#22d3ee{% endif %}; color: white;">
+                    {{ blog.categoria }}
+                  </span>
+                </div>
+              </div>
+              <div class="flex-1 w-full flex flex-col items-center justify-start">
+                <h2 class="text-xl font-extrabold mb-2 text-center text-gray-900 group-hover:text-green-600 transition leading-tight">{{ blog.titulo }}</h2>
+                <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
+                  <i class="fa-solid fa-user"></i> {{ blog.autor }}
+                  <span class="mx-1">·</span>
+                  <i class="fa-solid fa-calendar"></i> {{ blog.fecha_publicacion }}
+                </div>
+                <p class="blog-resumen text-gray-600 text-sm mb-4 text-center leading-relaxed">{{ blog.resumen or 'Descubre más en el blog.' }}</p>
+              </div>
+              <div class="w-full flex flex-col gap-2 mt-auto">
+                <a href="{{ url_for('blog_detalle', blog_id=blog.id) }}" class="inline-flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 transition font-semibold shadow w-full justify-center mb-1">
+                  <i class="fa-solid fa-book-open"></i> Leer más
+                </a>
+                <button onclick="compartirBlog('{{ blog.titulo|escape }}', '{{ url_for('blog_detalle', blog_id=blog.id, _external=True) }}')" class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-5 py-2 rounded-lg hover:bg-blue-200 transition font-semibold shadow w-full justify-center mb-1">
+                  <i class="fa-solid fa-share-nodes"></i> Compartir
+                </button>
+                {# <a href="{{ url_for('blog_detalle', blog_id=blog.id) }}#comentarios" class="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 px-5 py-2 rounded-lg hover:bg-yellow-200 transition font-semibold shadow w-full justify-center">
+                  <i class="fa-solid fa-comment"></i> Comentar
+                </a> #}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <!-- Flechas -->
+        <div class="swiper-button-next text-green-600"></div>
+        <div class="swiper-button-prev text-green-600"></div>
+        <!-- Paginación -->
+        <div class="swiper-pagination"></div>
+      </div>
+      <div class="w-full flex justify-center mt-8">
+        <a href="/comunidad" class="inline-block bg-green-500 text-white px-8 py-3 rounded-full font-bold text-lg shadow hover:bg-green-600 transition">Ver todos los blogs</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <!-- SwiperJS JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/comunidad.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/blog.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/comunidad_share.js') }}"></script>
+{% endblock %} 

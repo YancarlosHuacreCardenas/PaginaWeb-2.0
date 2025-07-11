@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}bycint Cosméticos{% endblock %}</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-papm6Q+K6lJzi10BGSAdoo6gWQBaIj++ImQxGc1dQc5sKXc5teLoI0lp4rWuIwoMvV7lidh+NangNh4pW7x1Yw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/plantilla/plantilla.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loader.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex flex-col">
+    {% from 'components/macros.html' import site_header, site_footer %}
+    
+    {{ site_header() }}
+
+    <!-- Contenido principal -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    {{ site_footer() }}
+    
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    {% include 'pago_modal.html' %}
+    <script>
+        {% if products is defined %}
+        window.products = {{ products|tojson }};
+        {% else %}
+        window.products = [];
+        {% endif %}
+    </script>
+    <!-- Componentes JavaScript globales -->
+    <script src="{{ url_for('static', filename='js/components.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/product_card.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/mini_cart.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ blog.titulo }} - Comunidad bycint{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12 max-w-3xl">
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <img src="{{ url_for('static', filename='img/' ~ blog.imagen) }}" alt="{{ blog.titulo }}" class="w-40 h-40 object-cover rounded-full mx-auto mb-4 shadow">
+        <h1 class="text-3xl font-extrabold text-green-500 mb-4 text-center">{{ blog.titulo }}</h1>
+        <div class="text-gray-700 text-lg mb-6 text-center">{{ blog.contenido }}</div>
+    </div>
+    <!-- Sección de puntuación y comentarios -->
+    <div class="bg-gray-50 rounded-xl shadow p-6 mb-8">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Comentarios deshabilitados</h2>
+        <div class="text-gray-500">La opción de comentar ha sido deshabilitada por el administrador.</div>
+    </div>
+    <div class="text-center mt-8">
+        <a href="{{ url_for('comunidad') }}" class="text-green-600 hover:underline font-semibold">&larr; Volver a la comunidad</a>
+    </div>
+</div>
+<script>window.BLOG_ID = {{ blog.id }};</script>
+{% endblock %} 
